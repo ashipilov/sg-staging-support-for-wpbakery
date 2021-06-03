@@ -13,6 +13,7 @@
 
 require_once('SgStagingSupportForWbBakery.php');
 
-add_filter('the_content', function( $content ) { return (new SgStagingSupportForWbBakery(home_url()))->stage($content); });
+/* Brutal override the post content using the action instead of filters. Otherwise WP Bakery front end editor doesn't pick up the chagnes */
+add_action('the_post', function( $post ) { $post->post_content = (new SgStagingSupportForWbBakery(home_url()))->stage($post->post_content); }, -1000);
 add_filter('content_edit_pre', function( $content ) { return (new SgStagingSupportForWbBakery(home_url()))->stage($content); });
 add_filter('content_save_pre', function( $content ) { return (new SgStagingSupportForWbBakery(home_url()))->unStage($content); });
