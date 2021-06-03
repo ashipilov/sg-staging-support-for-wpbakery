@@ -2,13 +2,11 @@
 
 class SgStagingSupportForWbBakery
 {
-    protected $home_url;
     protected $isStaging;
     protected $baseHost;
     protected $stagingHost;
     
     public function __construct($home_url) {
-        $this->home_url = $home_url;
 
         if (preg_match('/(http|https):\/\/(staging\d+\.([^\/]*))(\/)?/', $home_url, $matches)) {
             $this -> isStaging = true;
@@ -31,13 +29,8 @@ class SgStagingSupportForWbBakery
     }
 
     protected function replace($content, $originalHost, $newHost) {
-        return $this->replaceProtocol($this-> replaceProtocol($content, 'http',  $originalHost, $newHost),
-            'https', $originalHost, $newHost);
-    }
-
-    protected function replaceProtocol($content, $protocol, $originalHost, $newHost) {
-        $stringToReplace = $protocol . '%3A%2F%2F' . $originalHost;
-        $newString = $protocol . '%3A%2F%2F' . $newHost;
-        return str_replace($stringToReplace, $newString, $content);
+        $regex = '/(http|https)%3A%2F%2F' . preg_quote($originalHost) . '/';
+        $replaceWith = '${1}%3A%2F%2F' . $newHost;
+        return preg_replace($regex, $replaceWith, $content);
     }
 }
